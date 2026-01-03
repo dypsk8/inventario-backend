@@ -39,7 +39,7 @@ Para ejecutar este proyecto necesitas tener instalado:
    -- Nota: La contraseña del usuario admin debe crearse vía API o usar un hash válido.
 
 
-2. Configuración del Backend
+### 2. Configuración del Backend
 Abre una terminal y entra a la carpeta del backend:
 
 cd inventario-backend
@@ -50,7 +50,7 @@ npm install
 
 Crea un archivo .env en la raíz de inventario-backend con el siguiente contenido (ajusta tu usuario y contraseña de postgres):
 
-# Reemplaza 'usuario' y 'password' con tus credenciales de Postgres
+ Reemplaza 'usuario' y 'password' con tus credenciales de Postgres
 DATABASE_URL="postgresql://usuario:password@localhost:5432/inventario_db?schema=public"
 JWT_SECRET="mi_secreto_super_seguro"
 PORT=3000
@@ -61,7 +61,7 @@ npm run dev
 
 Debería indicar: "Servidor corriendo en puerto 3000".
 
-3. Configuración del Frontend
+### 3. Configuración del Frontend
 Abre otra terminal y entra a la carpeta del frontend:
 
 cd inventario-frontend
@@ -76,7 +76,7 @@ npm run dev
 
 Abre el navegador en la URL que te indique (generalmente http://localhost:5173).
 
-Si has restaurado la base de datos incluida, puedes ingresar con:
+### Si has restaurado la base de datos incluida, puedes ingresar con:
 
 Usuario: duval.yepez@empresa.com 
 
