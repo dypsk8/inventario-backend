@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model activos {
+  id                  Int                   @id @default(autoincrement())
+  codigo              String                @unique @db.VarChar(50)
+  nombre              String                @db.VarChar(150)
+  descripcion         String?
+  categoria_id        Int?
+  bodega_id           Int?
+  estado              estado_activo?        @default(DISPONIBLE)
+  valor_compra        Decimal?              @db.Decimal(12, 2)
+  fecha_adquisicion   DateTime?             @db.Date
+  fecha_registro      DateTime?             @default(now()) @db.Timestamp(6)
+  bodegas             bodegas?              @relation(fields: [bodega_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  categorias          categorias?           @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detalles_movimiento detalles_movimiento[]
+}
+
+model bodegas {
+  id                                                                 Int                   @id @default(autoincrement())
+  nombre                                                             String                @db.VarChar(100)
+  ubicacion                                                          String?               @db.VarChar(255)
+  activa                                                             Boolean?              @default(true)
+  activos                                                            activos[]
+  detalles_movimiento_detalles_movimiento_bodega_destino_idTobodegas detalles_movimiento[] @relation("detalles_movimiento_bodega_destino_idTobodegas")
+  detalles_movimiento_detalles_movimiento_bodega_origen_idTobodegas  detalles_movimiento[] @relation("detalles_movimiento_bodega_origen_idTobodegas")
+}
+
+model categorias {
+  id      Int       @id @default(autoincrement())
+  nombre  String    @db.VarChar(100)
+  prefijo String?   @db.VarChar(10)
+  activos activos[]
+}
+
+model detalles_movimiento {
+  id                                                     Int          @id @default(autoincrement())
+  movimiento_id                                          Int?
+  activo_id                                              Int?
+  bodega_origen_id                                       Int?
+  bodega_destino_id                                      Int?
+  activos                                                activos?     @relation(fields: [activo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bodegas_detalles_movimiento_bodega_destino_idTobodegas bodegas?     @relation("detalles_movimiento_bodega_destino_idTobodegas", fields: [bodega_destino_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bodegas_detalles_movimiento_bodega_origen_idTobodegas  bodegas?     @relation("detalles_movimiento_bodega_origen_idTobodegas", fields: [bodega_origen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  movimientos                                            movimientos? @relation(fields: [movimiento_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model movimientos {
+  id                  Int                   @id @default(autoincrement())
+  usuario_id          Int?
+  tipo                tipo_movimiento
+  fecha               DateTime?             @default(now()) @db.Timestamp(6)
+  observacion         String?
+  detalles_movimiento detalles_movimiento[]
+  usuarios            usuarios?             @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model roles {
+  id          Int        @id @default(autoincrement())
+  nombre      String     @unique @db.VarChar(50)
+  descripcion String?
+  usuarios    usuarios[]
+}
+
+model usuarios {
+  id              Int           @id @default(autoincrement())
+  nombre_completo String        @db.VarChar(100)
+  email           String        @unique @db.VarChar(100)
+  password        String        @db.VarChar(255)
+  rol_id          Int?
+  activo          Boolean?      @default(true)
+  fecha_creacion  DateTime?     @default(now()) @db.Timestamp(6)
+  movimientos     movimientos[]
+  roles           roles?        @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum estado_activo {
+  DISPONIBLE
+  ASIGNADO
+  REPARACION
+  BAJA
+}
+
+enum tipo_movimiento {
+  INGRESO
+  TRASLADO
+  ASIGNACION
+  MANTENIMIENTO
+  DEVOLUCION
+}
